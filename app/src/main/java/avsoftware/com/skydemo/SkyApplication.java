@@ -1,16 +1,16 @@
 package avsoftware.com.skydemo;
 
-import android.app.Application;
-import android.content.Context;
+import android.support.multidex.MultiDexApplication;
 
 import avsoftware.com.skydemo.dagger.ApplicationComponent;
 import avsoftware.com.skydemo.dagger.DaggerApplicationComponent;
+import avsoftware.com.skydemo.dagger.NetworkModule;
 
 /**
  * Created by abennett on 12/03/2018.
  */
 
-public class SkyApplication extends Application {
+public class SkyApplication extends MultiDexApplication {
 
     private static SkyApplication mInstance;
 
@@ -22,11 +22,16 @@ public class SkyApplication extends Application {
 
         mInstance = this;
 
-        mComponent = DaggerApplicationComponent.builder().build();
+        mComponent = DaggerApplicationComponent.builder()
+                .networkModule(new NetworkModule(this))
+                .build();
     }
 
-    public static ApplicationComponent getComponent(Context ctx){
-        SkyApplication app = (SkyApplication) ctx.getApplicationContext();
-        return app.mComponent;
+    public static SkyApplication getInstance() {
+        return mInstance;
+    }
+
+    public ApplicationComponent component() {
+        return mComponent;
     }
 }

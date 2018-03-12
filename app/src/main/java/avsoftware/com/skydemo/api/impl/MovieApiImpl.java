@@ -4,6 +4,7 @@ import java.util.List;
 
 import avsoftware.com.skydemo.api.MovieApi;
 import avsoftware.com.skydemo.api.model.Movie;
+import avsoftware.com.skydemo.api.model.MovieResponse;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
@@ -23,12 +24,13 @@ public class MovieApiImpl implements MovieApi {
 
     private interface  MovieRetrofit {
         @GET("api/movies")
-        Single<List<Movie>> getMovies();
+        Single<MovieResponse> getMovies();
     }
 
     @Override
     public Single<List<Movie>> getMovies() {
         return mApi.getMovies()
-                .subscribeOn(Schedulers.io());
+                .subscribeOn(Schedulers.io())
+                .map(MovieResponse::data);
     }
 }

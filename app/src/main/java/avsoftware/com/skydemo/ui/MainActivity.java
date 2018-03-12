@@ -1,7 +1,8 @@
 package avsoftware.com.skydemo.ui;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 
 import javax.inject.Inject;
 
@@ -22,18 +23,23 @@ public class MainActivity extends AppCompatActivity {
 
         mDisposable = new CompositeDisposable();
 
-        SkyApplication.getComponent(this).inject(this);
+        SkyApplication.getInstance().component().inject(this);
 
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(LayoutInflater.from(this));
         binding.setViewModel(mViewModel);
+
+        mDisposable.add(
+                mViewModel.connect().subscribe()
+        );
 
         setContentView(binding.getRoot());
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mDisposable != null){
+        if (mDisposable != null) {
             mDisposable.dispose();
         }
     }
