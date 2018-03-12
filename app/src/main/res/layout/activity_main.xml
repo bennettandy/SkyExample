@@ -8,6 +8,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="viewModel"
+            type="avsoftware.com.skydemo.ui.MainActivityViewModel" />
+
+        <variable
             name="powerAdapter"
             type="com.nextfaze.poweradapters.PowerAdapter" />
 
