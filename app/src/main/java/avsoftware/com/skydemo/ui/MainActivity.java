@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(LayoutInflater.from(this));
         binding.setViewModel(mViewModel);
-        binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
         mDisposable.add(
                 mViewModel.connect().subscribe()
@@ -50,11 +50,5 @@ public class MainActivity extends AppCompatActivity {
         if (mDisposable != null) {
             mDisposable.dispose();
         }
-    }
-
-    @BindingAdapter("setMovieAdapter")
-    public static void setPowerAdapter(RecyclerView view, PowerAdapter adapter) {
-        if (adapter != null)
-            view.setAdapter(RecyclerPowerAdapters.toRecyclerAdapter(adapter));
     }
 }
