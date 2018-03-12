@@ -6,6 +6,7 @@ import com.jakewharton.rxrelay2.BehaviorRelay;
 import com.nextfaze.poweradapters.PowerAdapter;
 import com.nextfaze.poweradapters.binding.Binder;
 import com.nextfaze.poweradapters.binding.ViewHolderBinder;
+import com.nextfaze.poweradapters.rxjava2.ObservableAdapterBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,10 +38,12 @@ public class MainActivityViewModel {
     }
 
     public PowerAdapter getMovieAdapter(){
-        return PowerAdapter.EMPTY;
+        ObservableAdapterBuilder<Movie> builder = new ObservableAdapterBuilder<>(movieBinder);
+        builder.contents(mMovies);
+        return builder.build();
     }
 
-    private Binder<Movie, View> topicBinder =
+    private Binder<Movie, View> movieBinder =
             ViewHolderBinder.create(R.layout.movie_card,
                     MovieViewHolder::new, (container, movie, topicViewHolder, holder) -> {
                         topicViewHolder.bindViewHolder(movie);

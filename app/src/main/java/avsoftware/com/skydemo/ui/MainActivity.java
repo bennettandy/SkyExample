@@ -1,8 +1,15 @@
 package avsoftware.com.skydemo.ui;
 
+import android.databinding.BindingAdapter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+
+import com.nextfaze.poweradapters.PowerAdapter;
+import com.nextfaze.poweradapters.recyclerview.RecyclerPowerAdapters;
 
 import javax.inject.Inject;
 
@@ -27,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(LayoutInflater.from(this));
         binding.setViewModel(mViewModel);
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         mDisposable.add(
                 mViewModel.connect().subscribe()
@@ -42,5 +50,11 @@ public class MainActivity extends AppCompatActivity {
         if (mDisposable != null) {
             mDisposable.dispose();
         }
+    }
+
+    @BindingAdapter("setMovieAdapter")
+    public static void setPowerAdapter(RecyclerView view, PowerAdapter adapter) {
+        if (adapter != null)
+            view.setAdapter(RecyclerPowerAdapters.toRecyclerAdapter(adapter));
     }
 }
