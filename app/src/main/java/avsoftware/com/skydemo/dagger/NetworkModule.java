@@ -9,6 +9,8 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import avsoftware.com.skydemo.BuildConfig;
+import avsoftware.com.skydemo.api.MovieApi;
+import avsoftware.com.skydemo.api.impl.MovieApiImpl;
 import avsoftware.com.skydemo.ui.MainActivityViewModel;
 import dagger.Module;
 import dagger.Provides;
@@ -33,9 +35,25 @@ public class NetworkModule {
     private final static int TIMEOUT_READ = 30; // 15 secs
     private final static int TIMEOUT_WRITE = 30; // 15 secs
 
+    private Context mContext;
+
+    public NetworkModule(Context context){
+        mContext = context;
+    }
+
     @Provides
-    static MainActivityViewModel provideMainActivityViewModel() {
-        return new MainActivityViewModel();
+    Context provideContext(){
+        return mContext;
+    }
+
+    @Provides
+    static MainActivityViewModel provideMainActivityViewModel(MovieApi api) {
+        return new MainActivityViewModel(api);
+    }
+
+    @Provides
+    static MovieApi provideMovieApi(Retrofit retrofit){
+        return new MovieApiImpl(retrofit);
     }
 
     @Provides
@@ -73,8 +91,7 @@ public class NetworkModule {
 
     @Provides
     @ApplicationScope
-    static OkHttpClient provideOkHttpClient(Context context,
-                                            OkHttpClient.Builder builder) {
+    static OkHttpClient provideOkHttpClient(Context context, OkHttpClient.Builder builder) {
         // Set Cache
         Cache cache = initCache(context);
         builder.cache(cache);

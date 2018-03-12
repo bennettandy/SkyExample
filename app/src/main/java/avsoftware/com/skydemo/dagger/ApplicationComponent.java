@@ -6,6 +6,7 @@ import dagger.Component;
 /**
  * Created by abennett on 12/03/2018.
  */
+@ApplicationScope
 @Component(modules = {NetworkModule.class})
 public interface ApplicationComponent {
 
