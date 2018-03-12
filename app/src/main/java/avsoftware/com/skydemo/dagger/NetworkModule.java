@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import avsoftware.com.skydemo.BuildConfig;
 import avsoftware.com.skydemo.api.MovieApi;
 import avsoftware.com.skydemo.api.impl.MovieApiImpl;
+import avsoftware.com.skydemo.api.model.GeneratedTypeAdapterFactory;
 import avsoftware.com.skydemo.ui.MainActivityViewModel;
 import dagger.Module;
 import dagger.Provides;
@@ -71,7 +72,8 @@ public class NetworkModule {
     @ApplicationScope
     static Gson provideGson() {
         return new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
+                // gson type adapters
+                .registerTypeAdapterFactory(GeneratedTypeAdapterFactory.create())
                 .create();
     }
 
