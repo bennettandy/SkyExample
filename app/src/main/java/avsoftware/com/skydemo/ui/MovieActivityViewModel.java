@@ -27,18 +27,19 @@ public class MovieActivityViewModel {
 
     private MovieCache mCache;
 
-    final Relay<Boolean> refreshMovies;
-
     public MovieActivityViewModel(MovieCache cache){
         mMovies = BehaviorRelay.createDefault(Collections.emptyList());
         mCache = cache;
-        refreshMovies = cache.tryRefreshMovies;
     }
 
     public PowerAdapter getMovieAdapter(){
         ObservableAdapterBuilder<Movie> builder = new ObservableAdapterBuilder<>(movieBinder);
-        builder.contents(mCache.movies.map(Timed::value));
+        builder.contents(mCache.movies);
         return builder.build();
+    }
+
+    public void tryRefresh(){
+        mCache.tryRefresh();
     }
 
     private Binder<Movie, View> movieBinder =

@@ -25,7 +25,7 @@ public class MovieActivity extends AppCompatActivity {
         binding.setViewModel(mViewModel);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
-        mViewModel.refreshMovies.accept(true);
+        mViewModel.tryRefresh();
 
         setContentView(binding.getRoot());
     }

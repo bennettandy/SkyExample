@@ -30,7 +30,7 @@ public class MovieCache {
 
     public final Observable<List<Movie>> movies;
 
-    public final PublishRelay<Boolean> tryRefreshMovies;
+    private final PublishRelay<Boolean> tryRefreshMovies;
 
     public MovieCache( MovieApi api){
         mApi = api;
@@ -39,6 +39,10 @@ public class MovieCache {
 
         // expose
         movies = cachedMovies.map(Timed::value);
+    }
+
+    public void tryRefresh(){
+        tryRefreshMovies.accept(true);
     }
 
     public Completable connectObservables(){
