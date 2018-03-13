@@ -9,21 +9,28 @@ import javax.inject.Inject;
 
 import avsoftware.com.skydemo.SkyApplication;
 import avsoftware.com.skydemo.databinding.ActivityMovieBinding;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class MovieActivity extends AppCompatActivity {
 
     @Inject
     protected MovieActivityViewModel mViewModel;
 
+    private CompositeDisposable mDisposable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mDisposable = new CompositeDisposable();
 
         SkyApplication.getInstance().component().inject(this);
 
         ActivityMovieBinding binding = ActivityMovieBinding.inflate(LayoutInflater.from(this));
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         binding.setViewModel(mViewModel);
+
+        mDisposable.add(mViewModel.searchObservable().subscribe());
 
         setContentView(binding.getRoot());
     }
@@ -32,5 +39,13 @@ public class MovieActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mViewModel.tryRefresh();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mDisposable != null){
+            mDisposable.dispose();
+        }
     }
 }
