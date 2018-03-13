@@ -30,7 +30,7 @@ public class MovieActivity extends AppCompatActivity {
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         binding.setViewModel(mViewModel);
 
-        mDisposable.add(mViewModel.searchObservable().subscribe());
+        mDisposable.add(mViewModel.connectObservables());
 
         setContentView(binding.getRoot());
     }
