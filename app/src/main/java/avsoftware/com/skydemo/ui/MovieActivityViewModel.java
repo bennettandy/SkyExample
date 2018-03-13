@@ -15,6 +15,7 @@ import java.util.List;
 import avsoftware.com.skydemo.R;
 import avsoftware.com.skydemo.api.model.Movie;
 import avsoftware.com.skydemo.cache.MovieCache;
+import io.reactivex.schedulers.Timed;
 
 /**
  * Created by abennett on 12/03/2018.
@@ -31,12 +32,12 @@ public class MovieActivityViewModel {
     public MovieActivityViewModel(MovieCache cache){
         mMovies = BehaviorRelay.createDefault(Collections.emptyList());
         mCache = cache;
-        refreshMovies = cache.refreshMovies;
+        refreshMovies = cache.tryRefreshMovies;
     }
 
     public PowerAdapter getMovieAdapter(){
         ObservableAdapterBuilder<Movie> builder = new ObservableAdapterBuilder<>(movieBinder);
-        builder.contents(mCache.movies);
+        builder.contents(mCache.movies.map(Timed::value));
         return builder.build();
     }
 
