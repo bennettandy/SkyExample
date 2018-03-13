@@ -16,10 +16,16 @@
         android:layout_height="match_parent"
         tools:context="avsoftware.com.skydemo.ui.MainActivity">
 
+        <android.support.v7.widget.SearchView
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></android.support.v7.widget.SearchView>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@id/search"
             app:setMovieAdapter="@{viewModel.getMovieAdapter()}" />
 
     </RelativeLayout>
