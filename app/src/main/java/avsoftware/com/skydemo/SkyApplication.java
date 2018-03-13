@@ -42,6 +42,9 @@ public class SkyApplication extends MultiDexApplication {
 
         mDisposabble.add( cache.connectObservables().subscribe(() -> {}, Timber::e));
 
+        // try to pre-populate
+        cache.tryRefresh();
+
     }
 
     public static SkyApplication getInstance() {

@@ -22,11 +22,15 @@ public class MovieActivity extends AppCompatActivity {
         SkyApplication.getInstance().component().inject(this);
 
         ActivityMovieBinding binding = ActivityMovieBinding.inflate(LayoutInflater.from(this));
-        binding.setViewModel(mViewModel);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-
-        mViewModel.tryRefresh();
+        binding.setViewModel(mViewModel);
 
         setContentView(binding.getRoot());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mViewModel.tryRefresh();
     }
 }
