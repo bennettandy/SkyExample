@@ -1,4 +1,4 @@
-package avsoftware.com.skydemo.ui;
+package avsoftware.com.skydemo.ui.bindings;
 
 import android.databinding.BindingAdapter;
 import android.support.v7.widget.RecyclerView;

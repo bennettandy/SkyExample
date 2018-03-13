@@ -3,6 +3,7 @@ package avsoftware.com.skydemo.ui;
 import android.view.View;
 
 import com.jakewharton.rxrelay2.BehaviorRelay;
+import com.jakewharton.rxrelay2.Relay;
 import com.nextfaze.poweradapters.PowerAdapter;
 import com.nextfaze.poweradapters.binding.Binder;
 import com.nextfaze.poweradapters.binding.ViewHolderBinder;
@@ -14,6 +15,7 @@ import java.util.List;
 import avsoftware.com.skydemo.R;
 import avsoftware.com.skydemo.api.MovieApi;
 import avsoftware.com.skydemo.api.model.Movie;
+import avsoftware.com.skydemo.cache.MovieCache;
 import io.reactivex.Completable;
 
 /**
@@ -24,22 +26,19 @@ public class MainActivityViewModel {
 
     private BehaviorRelay<List<Movie>> mMovies;
 
-    private MovieApi mApi;
+    private MovieCache mCache;
 
-    public MainActivityViewModel(MovieApi api){
+    public final Relay<Boolean> refreshMovies;
+
+    public MainActivityViewModel(MovieCache cache){
         mMovies = BehaviorRelay.createDefault(Collections.emptyList());
-        mApi = api;
-    }
-
-    public Completable connect(){
-        return mApi.getMovies()
-                .doOnSuccess(mMovies)
-                .toCompletable();
+        mCache = cache;
+        refreshMovies = cache.refreshMovies;
     }
 
     public PowerAdapter getMovieAdapter(){
         ObservableAdapterBuilder<Movie> builder = new ObservableAdapterBuilder<>(movieBinder);
-        builder.contents(mMovies);
+        builder.contents(mCache.movies);
         return builder.build();
     }
 

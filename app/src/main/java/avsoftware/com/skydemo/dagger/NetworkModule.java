@@ -12,6 +12,7 @@ import avsoftware.com.skydemo.BuildConfig;
 import avsoftware.com.skydemo.api.MovieApi;
 import avsoftware.com.skydemo.api.impl.MovieApiImpl;
 import avsoftware.com.skydemo.api.model.GeneratedTypeAdapterFactory;
+import avsoftware.com.skydemo.cache.MovieCache;
 import avsoftware.com.skydemo.ui.MainActivityViewModel;
 import dagger.Module;
 import dagger.Provides;
@@ -48,8 +49,14 @@ public class NetworkModule {
     }
 
     @Provides
-    static MainActivityViewModel provideMainActivityViewModel(MovieApi api) {
-        return new MainActivityViewModel(api);
+    static MainActivityViewModel provideMainActivityViewModel(MovieCache cache) {
+        return new MainActivityViewModel(cache);
+    }
+
+    @Provides
+    @ApplicationScope
+    static MovieCache provideMovieCache(MovieApi api) {
+        return new MovieCache(api);
     }
 
     @Provides
@@ -119,7 +126,7 @@ public class NetworkModule {
             }
             return new Cache(cacheDir, DISK_CACHE_SIZE);
         } catch (Exception e) {
-            Timber.e(e, "Error creating OkHttp cache: " + e.getMessage());
+            Timber.e(e, "Error creating OkHttp cache: %s", e.getMessage());
             return null;
         }
     }

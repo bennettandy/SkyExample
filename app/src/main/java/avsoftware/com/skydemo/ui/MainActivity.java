@@ -19,7 +19,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class MainActivity extends AppCompatActivity {
 
-    private CompositeDisposable mDisposable;
+//    private CompositeDisposable mDisposable;
 
     @Inject
     protected MainActivityViewModel mViewModel;
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDisposable = new CompositeDisposable();
+//        mDisposable = new CompositeDisposable();
 
         SkyApplication.getInstance().component().inject(this);
 
@@ -36,19 +36,20 @@ public class MainActivity extends AppCompatActivity {
         binding.setViewModel(mViewModel);
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 
-        mDisposable.add(
-                mViewModel.connect().subscribe()
-        );
-
         setContentView(binding.getRoot());
     }
 
-
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mDisposable != null) {
-            mDisposable.dispose();
-        }
+    protected void onResume() {
+        super.onResume();
+        mViewModel.refreshMovies.accept(true);
     }
+
+    //    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if (mDisposable != null) {
+//            mDisposable.dispose();
+//        }
+//    }
 }

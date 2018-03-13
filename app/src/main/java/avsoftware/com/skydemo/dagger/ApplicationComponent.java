@@ -1,5 +1,6 @@
 package avsoftware.com.skydemo.dagger;
 
+import avsoftware.com.skydemo.cache.MovieCache;
 import avsoftware.com.skydemo.ui.MainActivity;
 import dagger.Component;
 
@@ -11,4 +12,6 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     void inject(MainActivity activity);
+
+    MovieCache provideMovieCache();
 }
