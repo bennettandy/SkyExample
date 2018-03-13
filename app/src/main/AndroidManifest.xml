@@ -14,7 +14,7 @@
         android:theme="@style/Base.Theme.AppCompat.Light"
         >
 
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.MovieActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

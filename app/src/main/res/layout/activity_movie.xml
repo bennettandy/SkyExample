@@ -7,14 +7,14 @@
 
         <variable
             name="viewModel"
-            type="avsoftware.com.skydemo.ui.MainActivityViewModel" />
+            type="avsoftware.com.skydemo.ui.MovieActivityViewModel" />
 
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="avsoftware.com.skydemo.ui.MainActivity">
+        tools:context="avsoftware.com.skydemo.ui.MovieActivity">
 
         <android.support.v7.widget.SearchView
             android:id="@+id/search"

@@ -13,7 +13,7 @@ import avsoftware.com.skydemo.api.MovieApi;
 import avsoftware.com.skydemo.api.impl.MovieApiImpl;
 import avsoftware.com.skydemo.api.model.GeneratedTypeAdapterFactory;
 import avsoftware.com.skydemo.cache.MovieCache;
-import avsoftware.com.skydemo.ui.MainActivityViewModel;
+import avsoftware.com.skydemo.ui.MovieActivityViewModel;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
@@ -49,8 +49,9 @@ public class NetworkModule {
     }
 
     @Provides
-    static MainActivityViewModel provideMainActivityViewModel(MovieCache cache) {
-        return new MainActivityViewModel(cache);
+    @ApplicationScope
+    static MovieActivityViewModel provideMainActivityViewModel(MovieCache cache) {
+        return new MovieActivityViewModel(cache);
     }
 
     @Provides

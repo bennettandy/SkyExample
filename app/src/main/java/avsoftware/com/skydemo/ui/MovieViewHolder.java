@@ -13,11 +13,11 @@ import avsoftware.com.skydemo.databinding.MovieCardBinding;
  * Created by abennett on 28/11/2017.
  */
 
-public class MovieViewHolder extends ViewHolder {
+class MovieViewHolder extends ViewHolder {
 
     private MovieCardBinding movieCardBinding;
 
-    public MovieViewHolder(@NonNull View view) {
+    MovieViewHolder(@NonNull View view) {
         super(view);
         movieCardBinding = DataBindingUtil.getBinding(view);
         if (movieCardBinding == null){
@@ -25,7 +25,7 @@ public class MovieViewHolder extends ViewHolder {
         }
     }
 
-    public void bindViewHolder(Movie movie){
+    void bindViewHolder(Movie movie){
         movieCardBinding.setMovie(movie);
     }
 }
