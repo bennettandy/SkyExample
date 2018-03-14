@@ -14,6 +14,7 @@ import org.javatuples.Pair;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import avsoftware.com.skydemo.R;
 import avsoftware.com.skydemo.api.model.Movie;
@@ -90,9 +91,9 @@ public class MovieActivityViewModel {
                         // filter movies depending on search string
                         .filter(movie -> {
                             // lower case strings before matching
-                            String search = pair.getValue0().toLowerCase();
-                            String title = movie.title().toLowerCase();
-                            String genre = movie.genre().toLowerCase();
+                            String search = pair.getValue0().toLowerCase(Locale.getDefault());
+                            String title = movie.title().toLowerCase(Locale.getDefault());
+                            String genre = movie.genre().toLowerCase(Locale.getDefault());
                             if (search.isEmpty()) {
                                 // always match if search string is empty
                                 return true;
