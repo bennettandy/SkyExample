@@ -18,13 +18,8 @@ public class MovieApiImpl implements MovieApi {
 
     private MovieRetrofit mApi;
 
-    public MovieApiImpl( Retrofit retrofit){
+    public MovieApiImpl(Retrofit retrofit) {
         mApi = retrofit.create(MovieRetrofit.class);
-    }
-
-    private interface  MovieRetrofit {
-        @GET("api/movies")
-        Single<MovieResponse> getMovies();
     }
 
     @Override
@@ -32,5 +27,10 @@ public class MovieApiImpl implements MovieApi {
         return mApi.getMovies()
                 .subscribeOn(Schedulers.io())
                 .map(MovieResponse::data);
+    }
+
+    private interface MovieRetrofit {
+        @GET("api/movies")
+        Single<MovieResponse> getMovies();
     }
 }

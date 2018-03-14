@@ -12,6 +12,6 @@ public abstract class GeneratedTypeAdapterFactory implements TypeAdapterFactory 
     // Static factory method to access the package
     // private generated implementation
     public static TypeAdapterFactory create() {
-        return  new AutoValueGson_GeneratedTypeAdapterFactory();
+        return new AutoValueGson_GeneratedTypeAdapterFactory();
     }
 }

@@ -39,13 +39,8 @@ public class NetworkModule {
 
     private Context mContext;
 
-    public NetworkModule(Context context){
+    public NetworkModule(Context context) {
         mContext = context;
-    }
-
-    @Provides
-    Context provideContext(){
-        return mContext;
     }
 
     @Provides
@@ -61,7 +56,7 @@ public class NetworkModule {
     }
 
     @Provides
-    static MovieApi provideMovieApi(Retrofit retrofit){
+    static MovieApi provideMovieApi(Retrofit retrofit) {
         return new MovieApiImpl(retrofit);
     }
 
@@ -130,5 +125,10 @@ public class NetworkModule {
             Timber.e(e, "Error creating OkHttp cache: %s", e.getMessage());
             return null;
         }
+    }
+
+    @Provides
+    Context provideContext() {
+        return mContext;
     }
 }

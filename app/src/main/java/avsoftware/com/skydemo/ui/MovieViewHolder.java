@@ -20,12 +20,12 @@ class MovieViewHolder extends ViewHolder {
     MovieViewHolder(@NonNull View view) {
         super(view);
         movieCardBinding = DataBindingUtil.getBinding(view);
-        if (movieCardBinding == null){
+        if (movieCardBinding == null) {
             movieCardBinding = MovieCardBinding.bind(view);
         }
     }
 
-    void bindViewHolder(Movie movie){
+    void bindViewHolder(Movie movie) {
         movieCardBinding.setMovie(movie);
     }
 }

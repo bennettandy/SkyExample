@@ -29,18 +29,27 @@ import timber.log.Timber;
 
 public class MovieActivityViewModel {
 
-    // output
-    private BehaviorRelay<List<Movie>> mMovies;
-
-    // input
-    final BehaviorRelay<String> searchString;
-
-    // trigger
-    private final PublishRelay<String> searchTrigger;
-
+    // flag to tell ui the movie list is being refreshed
     public final ObservableBoolean isRefreshing;
 
+    // search string from UI
+    final BehaviorRelay<String> searchString;
+
+    // triggers filtering of movie list
+    private final PublishRelay<String> searchTrigger;
+
+    // filtered movie list for display
+    private BehaviorRelay<List<Movie>> mMovies;
+
+    // Movie cache provides movie list
     private MovieCache mCache;
+
+    // UI Binder for Recycler Adapter
+    private Binder<Movie, View> movieBinder =
+            ViewHolderBinder.create(R.layout.movie_card,
+                    MovieViewHolder::new, (container, movie, movieViewHolder, holder) -> {
+                        movieViewHolder.bindViewHolder(movie);
+                    });
 
     public MovieActivityViewModel(MovieCache cache) {
         mMovies = BehaviorRelay.createDefault(Collections.emptyList());
@@ -50,11 +59,11 @@ public class MovieActivityViewModel {
         isRefreshing = mCache.isRefreshing;
     }
 
-    public CompositeDisposable connectObservables() {
+    CompositeDisposable connectObservables() {
 
         CompositeDisposable disposable = new CompositeDisposable();
 
-        // trigger filteration if movie list changes
+        // trigger filteration if the movie list changes
         disposable.add(
                 mCache.movies
                         .doOnNext(movies -> {
@@ -74,18 +83,21 @@ public class MovieActivityViewModel {
                         .subscribe()
         );
 
-        // Filter movie list
+        // Filter movie list when triggered by either search change or arrival of new movie list
         disposable.add(searchTrigger
                 .withLatestFrom(mCache.movies, Pair::new)
                 .flatMapSingle(pair -> Observable.fromIterable(pair.getValue1())
                         // filter movies depending on search string
                         .filter(movie -> {
+                            // lower case strings before matching
                             String search = pair.getValue0().toLowerCase();
                             String title = movie.title().toLowerCase();
                             String genre = movie.genre().toLowerCase();
-                            if (search.isEmpty()){
+                            if (search.isEmpty()) {
+                                // always match if search string is empty
                                 return true;
                             }
+                            // match title or genre
                             return title.contains(search) || genre.contains(search);
                         })
                         .toList()
@@ -99,6 +111,12 @@ public class MovieActivityViewModel {
         return disposable;
     }
 
+    /**
+     * Power adapter binds Observable<List<Movie>> to Movie Card
+     *
+     * Nice library
+     * https://github.com/NextFaze/power-adapters
+     */
     public PowerAdapter getMovieAdapter() {
 
         Observable<List<Movie>> movieObservable = mMovies
@@ -110,13 +128,4 @@ public class MovieActivityViewModel {
         return builder.build();
     }
 
-    public void tryRefresh() {
-        mCache.tryRefresh();
-    }
-
-    private Binder<Movie, View> movieBinder =
-            ViewHolderBinder.create(R.layout.movie_card,
-                    MovieViewHolder::new, (container, movie, movieViewHolder, holder) -> {
-                        movieViewHolder.bindViewHolder(movie);
-                    });
 }

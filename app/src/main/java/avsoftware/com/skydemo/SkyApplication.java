@@ -21,6 +21,10 @@ public class SkyApplication extends MultiDexApplication {
 
     private CompositeDisposable mDisposabble;
 
+    public static SkyApplication getInstance() {
+        return mInstance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -39,16 +43,9 @@ public class SkyApplication extends MultiDexApplication {
 
     private void connectCaches() {
         MovieCache cache = mComponent.provideMovieCache();
-
-        mDisposabble.add( cache.connectObservables().subscribe(() -> {}, Timber::e));
-
-        // try to pre-populate
-        cache.tryRefresh();
-
-    }
-
-    public static SkyApplication getInstance() {
-        return mInstance;
+        mDisposabble.add(cache
+                .connectObservables().subscribe(() -> {
+                }, Timber::e));
     }
 
     public ApplicationComponent component() {

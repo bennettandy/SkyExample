@@ -24,19 +24,14 @@ import timber.log.Timber;
 public class MovieCache {
 
     private final static long CACHE_MAX_LIFE_MILLIS = 10 * 60 * 1000;
-
+    public final Observable<List<Movie>> movies;
+    public final ObservableBoolean isRefreshing;
     private final MovieApi mApi;
-
     // Movies cached as Timestamped List
     private final BehaviorRelay<Timed<List<Movie>>> cachedMovies;
-
-    public final Observable<List<Movie>> movies;
-
     private final PublishRelay<Boolean> tryRefreshMovies;
 
-    public final ObservableBoolean isRefreshing;
-
-    public MovieCache( MovieApi api){
+    public MovieCache(MovieApi api) {
         mApi = api;
         cachedMovies = BehaviorRelay.createDefault(new Timed<List<Movie>>(Collections.emptyList(), 0, TimeUnit.MILLISECONDS));
         tryRefreshMovies = PublishRelay.create();
@@ -47,14 +42,17 @@ public class MovieCache {
         isRefreshing = new ObservableBoolean(false);
     }
 
-    public void tryRefresh(){
+    public void tryRefresh() {
         tryRefreshMovies.accept(true);
     }
 
-    public Completable connectObservables(){
+    public Completable connectObservables() {
         return tryRefreshMovies
-                .withLatestFrom(cachedMovies, (aBoolean, listTimed) -> listTimed )
-                .filter( listTimed -> listTimed.time() < System.currentTimeMillis() + CACHE_MAX_LIFE_MILLIS )
+                .doOnNext(aBoolean -> {
+                    Timber.d("X");
+                })
+                .withLatestFrom(cachedMovies, (aBoolean, listTimed) -> listTimed)
+                .filter(listTimed -> listTimed.time() < System.currentTimeMillis() + CACHE_MAX_LIFE_MILLIS)
                 .doOnNext(__ -> Timber.d("Cache is stale"))
                 .doOnNext(__ -> isRefreshing.set(true))
                 .flatMapSingle(__ -> mApi.getMovies())
