@@ -1,5 +1,7 @@
 package avsoftware.com.skydemo.cache;
 
+import android.databinding.ObservableBoolean;
+
 import com.jakewharton.rxrelay2.BehaviorRelay;
 import com.jakewharton.rxrelay2.PublishRelay;
 
@@ -32,6 +34,8 @@ public class MovieCache {
 
     private final PublishRelay<Boolean> tryRefreshMovies;
 
+    public final ObservableBoolean isRefreshing;
+
     public MovieCache( MovieApi api){
         mApi = api;
         cachedMovies = BehaviorRelay.createDefault(new Timed<List<Movie>>(Collections.emptyList(), 0, TimeUnit.MILLISECONDS));
@@ -39,6 +43,8 @@ public class MovieCache {
 
         // expose
         movies = cachedMovies.map(Timed::value);
+
+        isRefreshing = new ObservableBoolean(false);
     }
 
     public void tryRefresh(){
@@ -50,10 +56,12 @@ public class MovieCache {
                 .withLatestFrom(cachedMovies, (aBoolean, listTimed) -> listTimed )
                 .filter( listTimed -> listTimed.time() < System.currentTimeMillis() + CACHE_MAX_LIFE_MILLIS )
                 .doOnNext(__ -> Timber.d("Cache is stale"))
+                .doOnNext(__ -> isRefreshing.set(true))
                 .flatMapSingle(__ -> mApi.getMovies())
                 .timestamp(TimeUnit.MILLISECONDS)
                 .doOnNext(cachedMovies)
                 .doOnError(Timber::e)
+                .doOnEach(__ -> isRefreshing.set(false))
                 .retry()
                 .subscribeOn(Schedulers.io())
                 .ignoreElements();

@@ -1,5 +1,6 @@
 package avsoftware.com.skydemo.ui;
 
+import android.databinding.ObservableBoolean;
 import android.view.View;
 
 import com.jakewharton.rxrelay2.BehaviorRelay;
@@ -13,7 +14,6 @@ import org.javatuples.Pair;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import avsoftware.com.skydemo.R;
 import avsoftware.com.skydemo.api.model.Movie;
@@ -21,6 +21,7 @@ import avsoftware.com.skydemo.cache.MovieCache;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by abennett on 12/03/2018.
@@ -32,10 +33,12 @@ public class MovieActivityViewModel {
     private BehaviorRelay<List<Movie>> mMovies;
 
     // input
-    public final BehaviorRelay<String> searchString;
+    final BehaviorRelay<String> searchString;
 
     // trigger
     private final PublishRelay<String> searchTrigger;
+
+    public final ObservableBoolean isRefreshing;
 
     private MovieCache mCache;
 
@@ -44,6 +47,7 @@ public class MovieActivityViewModel {
         searchString = BehaviorRelay.createDefault("");
         searchTrigger = PublishRelay.create();
         mCache = cache;
+        isRefreshing = mCache.isRefreshing;
     }
 
     public CompositeDisposable connectObservables() {
@@ -53,9 +57,11 @@ public class MovieActivityViewModel {
         // trigger filteration if movie list changes
         disposable.add(
                 mCache.movies
+                        .doOnNext(movies -> {
+                            Timber.d("Movies loaded");
+                        })
                         .withLatestFrom(searchString, (movies, s) -> s)
                         .doOnNext(searchTrigger)
-                        .retry()
                         .subscribeOn(Schedulers.computation())
                         .subscribe());
 
@@ -63,21 +69,29 @@ public class MovieActivityViewModel {
         disposable.add(
                 searchString
                         .doOnNext(searchTrigger)
-                        .retry()
+                        .doOnNext(__ -> mCache.tryRefresh()) // also try cache refresh?
                         .subscribeOn(Schedulers.computation())
                         .subscribe()
         );
 
         // Filter movie list
         disposable.add(searchTrigger
-                .throttleFirst(3, TimeUnit.SECONDS)
                 .withLatestFrom(mCache.movies, Pair::new)
                 .flatMapSingle(pair -> Observable.fromIterable(pair.getValue1())
-                        .filter(movie -> movie.title().contains(pair.getValue0()))
+                        // filter movies depending on search string
+                        .filter(movie -> {
+                            String search = pair.getValue0().toLowerCase();
+                            String title = movie.title().toLowerCase();
+                            String genre = movie.genre().toLowerCase();
+                            if (search.isEmpty()){
+                                return true;
+                            }
+                            return title.contains(search) || genre.contains(search);
+                        })
                         .toList()
                 )
+                .doOnNext(movies -> Timber.d("Filtered %d", movies.size()))
                 .doOnNext(mMovies)
-                .doOnNext(__ -> mCache.tryRefresh()) // FIXME - convoluted
                 .retry()
                 .subscribeOn(Schedulers.computation())
                 .subscribe());
@@ -86,8 +100,13 @@ public class MovieActivityViewModel {
     }
 
     public PowerAdapter getMovieAdapter() {
+
+        Observable<List<Movie>> movieObservable = mMovies
+                .doOnSubscribe(disposable -> mCache.tryRefresh())
+                .doOnNext(movies -> Timber.d("Adapter received %d movies", movies.size()));
+
         ObservableAdapterBuilder<Movie> builder = new ObservableAdapterBuilder<>(movieBinder);
-        builder.contents(mMovies);
+        builder.contents(movieObservable); // will replace full contents with each event
         return builder.build();
     }
 

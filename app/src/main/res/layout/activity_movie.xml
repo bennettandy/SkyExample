@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="avsoftware.com.skydemo.ui.MovieActivityViewModel" />
@@ -20,8 +22,19 @@
             android:id="@+id/search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:connectSearchText="@{viewModel.searchString}"
-            />
+            android:visibility="@{viewModel.isRefreshing ? View.GONE : View.VISIBLE}" />
+
+        <TextView
+            android:id="@+id/popup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@color/colorPrimary"
+            android:gravity="center_horizontal"
+            android:padding="3dp"
+            android:text="@string/loading_movies"
+            android:textColor="@color/white"
+            android:visibility="@{viewModel.isRefreshing ? View.VISIBLE : View.GONE}" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
