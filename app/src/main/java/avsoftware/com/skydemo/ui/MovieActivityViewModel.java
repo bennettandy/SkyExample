@@ -40,10 +40,10 @@ public class MovieActivityViewModel {
     private final PublishRelay<String> searchTrigger;
 
     // filtered movie list for display
-    private BehaviorRelay<List<Movie>> mMovies;
+    private final BehaviorRelay<List<Movie>> mMovies;
 
     // Movie cache provides movie list
-    private MovieCache mCache;
+    private final MovieCache mCache;
 
     // UI Binder for Recycler Adapter
     private Binder<Movie, View> movieBinder =
