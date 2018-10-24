@@ -2,10 +2,14 @@ package avsoftware.com.skydemo;
 
 import android.support.multidex.MultiDexApplication;
 
+import javax.inject.Inject;
+
 import avsoftware.com.skydemo.cache.MovieCache;
 import avsoftware.com.skydemo.dagger.ApplicationComponent;
 import avsoftware.com.skydemo.dagger.DaggerApplicationComponent;
 import avsoftware.com.skydemo.dagger.NetworkModule;
+import dagger.android.AndroidInjector;
+import dagger.android.support.DaggerApplication;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
 
@@ -13,11 +17,12 @@ import timber.log.Timber;
  * Created by abennett on 12/03/2018.
  */
 
-public class SkyApplication extends MultiDexApplication {
+public class SkyApplication extends DaggerApplication {
 
     private static SkyApplication mInstance;
 
-    private ApplicationComponent mComponent;
+    @Inject
+    protected ApplicationComponent mComponent;
 
     private CompositeDisposable mDisposabble;
 
@@ -31,12 +36,12 @@ public class SkyApplication extends MultiDexApplication {
 
         mInstance = this;
 
-        // disposable leak here, but we need it to survive with the App Lifecycke
-        mDisposabble = new CompositeDisposable();
-
-        mComponent = DaggerApplicationComponent.builder()
-                .networkModule(new NetworkModule(this))
-                .build();
+//        // disposable leak here, but we need it to survive with the App Lifecycke
+//        mDisposabble = new CompositeDisposable();
+//
+//        mComponent = DaggerApplicationComponent.builder()
+//                .networkModule(new NetworkModule(this))
+//                .build();
 
         connectCaches();
     }
@@ -48,7 +53,12 @@ public class SkyApplication extends MultiDexApplication {
                 }, Timber::e));
     }
 
-    public ApplicationComponent component() {
-        return mComponent;
+//    public ApplicationComponent component() {
+//        return mComponent;
+//    }
+
+    @Override
+    protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
+        return DaggerApplicationComponent.builder().application(this).build();
     }
 }
